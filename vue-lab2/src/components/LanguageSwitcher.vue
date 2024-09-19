@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import i18n from '@/i18n'
 import { useLanguageStore } from '@/stores/language'
 
-const { locale, t } = useI18n()
+const { locale } = useI18n()
 
 const languages = ref([
   { code: 'en', name: '🇺🇸' },
@@ -15,7 +15,7 @@ const selectedLanguage = ref(locale.value)
 const languageStore = useLanguageStore()
 
 onMounted(() => {
-  locale.value = languageStore.language
+  i18n.global.locale.value = languageStore.language
   selectedLanguage.value = languageStore.language
 })
 
@@ -30,9 +30,9 @@ function switchLanguage(newLanguage) {
     :options="languages"
     v-model="selectedLanguage"
     @change="switchLanguage"
+    :highlightOnSelect="true"
     optionLabel="name"
     optionValue="code"
-    :placeholder="t('selectLanguage')"
   />
 </template>
 

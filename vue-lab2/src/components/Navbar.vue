@@ -1,21 +1,73 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import VueSVG from '@/assets/vue.svg?url'
 import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
+import { useCartStore } from '@/stores/cart'
+import { useRouter } from 'vue-router'
+import { ROOT_ROUTE_NAMES, ROOT_ROUTE_PATHS } from '@/utils'
+import { useUserStore } from '@/stores/user'
+import { useToast } from 'primevue/usetoast'
+
 const { t } = useI18n()
 
-const items = ref([
+const cartStore = useCartStore()
+const userStore = useUserStore()
+const router = useRouter()
+const toast = useToast()
+
+const mainLabel = computed(() => t('main'))
+const cartLabel = computed(() => t('cart'))
+const logoutLabel = computed(() => t('logout'))
+const cartItemsAmount = computed(() => cartStore.cart.length)
+
+const menu = ref()
+const avatarItems = ref([
   {
-    label: t('main'),
-    icon: 'pi pi-home'
-  },
-  {
-    label: 'Cart',
-    icon: 'pi pi-shopping-cart',
-    badge: 5
+    label: logoutLabel,
+    icon: 'pi pi-sign-out',
+    command: () => {
+      userStore.logout()
+    }
   }
 ])
+const items = ref([
+  {
+    label: mainLabel,
+    icon: 'pi pi-home',
+    command: () => router.push(ROOT_ROUTE_PATHS.HOME)
+  },
+  {
+    label: cartLabel,
+    icon: 'pi pi-shopping-cart',
+    badge: cartItemsAmount,
+    command: () => router.push(ROOT_ROUTE_PATHS.CART)
+  }
+])
+
+watch([() => userStore.isLoggedIn, () => userStore.loginMessage], ([isLoggedIn, loginMessage]) => {
+  if (!isLoggedIn) {
+    router.push({ name: ROOT_ROUTE_NAMES.LOGIN })
+    if (loginMessage) {
+      toast.add({
+        severity: 'success',
+        summary: loginMessage,
+        life: 3000
+      })
+    }
+  } else if (loginMessage) {
+    toast.add({
+      severity: 'error',
+      summary: loginMessage,
+      life: 3000
+    })
+  }
+  userStore.clearLoginMessage()
+})
+
+const toggleAvatarMenu = (event) => {
+  menu.value.toggle(event)
+}
 </script>
 
 <template>
@@ -47,11 +99,18 @@ const items = ref([
       </template>
       <template #end>
         <div class="flex items-center gap-2">
-          <InputText placeholder="Search" type="text" class="w-32 sm:w-auto" />
           <LanguageSwitcher />
           <Avatar
+            class="cursor-pointer"
+            @click="toggleAvatarMenu"
             image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png"
             shape="circle"
+          />
+          <TieredMenu
+            ref="menu"
+            :model="avatarItems"
+            popup
+            :pt="{ root: { class: '!min-w-fit' } }"
           />
         </div>
       </template>
@@ -59,4 +118,8 @@ const items = ref([
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.custom-tiered-menu {
+  min-width: 20rem;
+}
+</style>

@@ -3,12 +3,15 @@ import Navbar from '@/components/Navbar.vue'
 </script>
 
 <template>
-  <div class="contain-layout">
-    <Navbar />
-    <main>
+  <div class="min-h-screen">
+    <header class="m-2">
+      <nav>
+        <Navbar />
+      </nav>
+    </header>
+
+    <main class="flex-1 m-2">
       <slot />
     </main>
   </div>
 </template>
-
-<style scoped></style>

@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
+import type { Pokemon } from '@/stores/pokemons'
 
 interface CartItem {
-  id: number
-  name: string
+  pokemon: Pokemon
   quantity: number
 }
 
@@ -15,23 +15,20 @@ export const useCartStore = defineStore('cart', {
     cart: []
   }),
   actions: {
-    addToCart(pokemon: CartItem) {
-      const existingItem = this.cart.find((item) => item.id === pokemon.id)
+    addToCart(pokemon: Pokemon, quantity = 1) {
+      const existingItem = this.cart.find((item) => item.pokemon.id === pokemon.id)
       if (existingItem) {
-        existingItem.quantity += 1
+        existingItem.quantity += quantity
       } else {
-        this.cart.push({ ...pokemon, quantity: 1 })
+        this.cart.push({ pokemon, quantity })
       }
     },
     removeFromCart(id: number) {
-      this.cart = this.cart.filter((item) => item.id !== id)
+      this.cart = this.cart.filter((item) => item.pokemon.id !== id)
     },
     clearCart() {
       this.cart = []
-    },
-    getCartItems() {
-      return this.cart
     }
   },
-  persist: true // Enable persistence for this store
+  persist: true
 })

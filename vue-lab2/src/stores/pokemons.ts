@@ -1,4 +1,3 @@
-// src/stores/pokemons.ts
 import { defineStore } from 'pinia'
 
 export interface Pokemon {
@@ -7,6 +6,10 @@ export interface Pokemon {
   base_experience: number
   height: number
   weight: number
+  sprites: {
+    front_default: string
+    back_default: string
+  }
 }
 
 interface State {
@@ -33,7 +36,8 @@ export const usePokemonsStore = defineStore('pokemons', {
               name: details.name,
               base_experience: details.base_experience,
               height: details.height,
-              weight: details.weight
+              weight: details.weight,
+              sprites: details.sprites
             } as Pokemon
           })
         )
@@ -44,15 +48,11 @@ export const usePokemonsStore = defineStore('pokemons', {
     },
     async fetchPokemonById(id: number) {
       try {
-        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)
-        const pokemon = await response.json()
-        return {
-          id: pokemon.id,
-          name: pokemon.name,
-          base_experience: pokemon.base_experience,
-          height: pokemon.height,
-          weight: pokemon.weight
-        } as Pokemon
+        if (this.pokemons.length === 0) {
+          await this.fetchAllPokemons()
+        }
+
+        return this.pokemons.find((p) => p.id === id) as Pokemon
       } catch (error) {
         console.error('Error fetching Pokémon:', error)
         return null
@@ -63,18 +63,6 @@ export const usePokemonsStore = defineStore('pokemons', {
       return this.pokemons.filter((pokemon) =>
         pokemon.name.toLowerCase().includes(searchValue.toLowerCase())
       )
-    },
-    createPokemon(pokemon: Pokemon) {
-      this.pokemons.push(pokemon)
-    },
-    updatePokemon(updatedPokemon: Pokemon) {
-      const index = this.pokemons.findIndex((p) => p.id === updatedPokemon.id)
-      if (index !== -1) {
-        this.pokemons[index] = updatedPokemon
-      }
-    },
-    deletePokemon(id: number) {
-      this.pokemons = this.pokemons.filter((pokemon) => pokemon.id !== id)
     }
   },
   persist: true
