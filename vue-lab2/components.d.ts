@@ -38,7 +38,6 @@ declare module 'vue' {
     TextInputField: typeof import('./src/components/TextInputField.vue')['default']
     TieredMenu: typeof import('primevue/tieredmenu')['default']
     Toast: typeof import('primevue/toast')['default']
-    'ФгерForm': typeof import('./src/components/ФгерForm.vue')['default']
   }
   export interface ComponentCustomProperties {
     Ripple: typeof import('primevue/ripple')['default']

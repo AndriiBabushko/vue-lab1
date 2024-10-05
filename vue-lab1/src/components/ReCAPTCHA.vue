@@ -6,13 +6,13 @@ import ErrorText from '@/components/ErrorText.vue'
 const props = defineProps<{
   name: string
 }>()
-const { executeRecaptcha } = useReCaptcha('6LeqVDkqAAAAAABBcYVoznBJfxXPltN_ZIFQJpCt')
+const { executeRecaptcha } = useReCaptcha()
 const { errorMessage, setValue } = useField(() => props.name)
 
 const handleRecaptcha = async () => {
   try {
     const token = await executeRecaptcha('verify')
-    console.log(`token`)
+    console.log(`token -> ${token}`)
     if (!token) {
       setValue('')
       return

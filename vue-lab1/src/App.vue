@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import ResumeForm from '@/views/ResumeForm.vue'
+import { ref } from 'vue'
+
 </script>
 
 <template>
