@@ -1,5 +1,5 @@
 {
-  "name": "vue",
+  "name": "vue-lab3",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -13,19 +13,24 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@primevue/themes": "^4.0.5",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.9",
-    "@unhead/vue": "^1.11.6",
     "@vee-validate/yup": "^4.13.2",
     "autoprefixer": "^10.4.20",
+    "pinia": "^2.1.7",
+    "pinia-plugin-persistedstate": "^4.0.0",
     "postcss": "^8.4.45",
+    "primeicons": "^7.0.0",
+    "primevue": "^4.0.5",
     "tailwindcss": "^3.4.10",
     "vee-validate": "^4.13.2",
+    "vite-svg-loader": "^5.1.0",
     "vue": "^3.4.29",
-    "vue-recaptcha-v3": "2.0.1",
     "yup": "^1.4.0"
   },
   "devDependencies": {
+    "@primevue/auto-import-resolver": "^4.0.5",
     "@rushstack/eslint-patch": "^1.8.0",
     "@tsconfig/node20": "^20.1.4",
     "@types/node": "^20.14.5",
@@ -39,6 +44,7 @@
     "npm-run-all2": "^6.2.0",
     "prettier": "^3.2.5",
     "typescript": "~5.4.0",
+    "unplugin-vue-components": "^0.27.4",
     "vite": "^5.3.1",
     "vite-plugin-vue-devtools": "^7.3.1",
     "vue-tsc": "^2.0.21"
