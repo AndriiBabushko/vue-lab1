@@ -1,0 +1,31 @@
+{
+  "main": "Home",
+  "cart": "Cart",
+  "baseExperience": "Base Experience",
+  "height": "Height",
+  "weight": "Weight",
+  "login": "Login",
+  "register": "Register",
+  "username": "Username",
+  "password": "Password",
+  "message": {
+    "yourCartIsEmpty": "Your cart is empty"
+  },
+  "button": {
+    "clearCart": "Clear cart",
+    "checkout": "Checkout"
+  },
+  "error": {
+    "usernameIsRequired": "Username is required",
+    "minPasswordLengthIs6": "Password must be at least 6 characters",
+    "passwordIsRequired": "Password is required",
+    "invalidPassword": "Invalid password",
+    "failedToFetchPokemon": "Failed to fetch the pokemon"
+  },
+  "success": {
+    "login": "You have successfully logged in",
+    "logout": "You have successfully logged out",
+    "registration": "You have successfully registered",
+    "addedToCart": "You have successfully added the {name} to the cart"
+  }
+}

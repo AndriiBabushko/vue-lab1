@@ -1,0 +1,32 @@
+{
+  "main": "Головна",
+  "cart": "Кошик",
+  "baseExperience": "Базовий досвід",
+  "height": "Зріст",
+  "weight": "Вага",
+  "login": "Увійти",
+  "logout": "Вийти",
+  "register": "Зареєструватись",
+  "username": "Ім'я користувача",
+  "password": "Пароль",
+  "message": {
+    "yourCartIsEmpty": "Ваш кошик порожній"
+  },
+  "button": {
+    "clearCart": "Очистити кошик",
+    "checkout": "Оформити замовлення"
+  },
+  "error": {
+    "usernameIsRequired": "Ім'я користувача обов'язкове",
+    "minPasswordLengthIs6": "Пароль повинен містити принаймні 6 символів",
+    "passwordIsRequired": "Пароль обов'язковий",
+    "invalidPassword": "Невірний пароль",
+    "failedToFetchPokemon": "Не вдалося завантажити покемона"
+  },
+  "success": {
+    "login": "Ви успішно увійшли",
+    "logout": "Ви успішно вийшли",
+    "registration": "Ви успішно зареєструвались",
+    "addedToCart": "Ви успішно додали {name} у кошик"
+  }
+}
