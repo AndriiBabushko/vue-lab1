@@ -1,0 +1,64 @@
+{
+  "message": {
+    "nameRequired": "Name is required",
+    "nameMin": "Name must be at least 3 characters",
+    "ageRequired": "Age is required",
+    "ageMin": "You must be at least 18 years old",
+    "phoneRequired": "Phone is required",
+    "phoneMin": "Phone must be at least 10 characters",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Email is not valid",
+    "sexRequired": "Sex is required",
+    "sexInvalid": "Invalid selection",
+    "passwordRequired": "Password is required",
+    "passwordMin": "Password must be at least 6 characters",
+    "menu": {
+      "testResults": "Test results",
+      "logout": "Logout",
+      "loggedOutSummary": "Logged out",
+      "loggedOutDetail": "You have been logged out successfully.",
+      "test": "Test",
+      "signUp": "Sign up",
+      "signIn": "Sign in"
+    },
+    "register": "Register",
+    "userRegistered": "User registered successfully",
+    "userRegistrationFailed": "User registration failed",
+    "name": "Name",
+    "age": "Age",
+    "phone": "Phone",
+    "email": "Email",
+    "sex": "Sex",
+    "password": "Password",
+    "login": "Login",
+    "loginSuccess": "User logged in successfully",
+    "loginError": "Something went wrong while logging in",
+    "loginTitle": "Login",
+    "loginButton": "Login"
+  },
+  "labInfo": {
+    "title": "Lab Work 5 - Vue 3 and VeeValidate",
+    "description": "This lab focuses on using the VeeValidate library to validate forms and data in a Vue 3 application. You will create a testing program that ensures data accuracy, allows navigation between questions, and verifies answers after test completion.",
+    "tasks": {
+      "integrateVeeValidate": "Integrate VeeValidate into the Vue project for form validation.",
+      "setUpValidationRules": "Set up validation rules for different types of input fields.",
+      "developTestInterface": "Develop a question-based test interface that allows navigation between questions.",
+      "validateAnswers": "Validate answers in real-time and store them for final review.",
+      "displaySummary": "Display a summary of correct and incorrect answers after test completion."
+    }
+  },
+  "validation": {
+    "selectOption": "Please select an option",
+    "selectAtLeastOne": "Please select at least one option",
+    "enterNumber": "Please enter a number",
+    "minValue": "Value should be greater than or equal to {minValue}",
+    "maxValue": "Value should be less than or equal to {maxValue}",
+    "enterDate": "Please enter a date",
+    "enterText": "Please enter text",
+    "containsKeyword": "Text should contain a keyword",
+    "completeAllQuestions": "Please complete all required questions"
+  },
+  "question": {
+    "number": "Question {current} of {total}"
+  }
+}
