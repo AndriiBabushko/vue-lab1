@@ -7,6 +7,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AddTodoModal: typeof import('./src/components/ui/AddTodoModal.vue')['default']
     ArchivedList: typeof import('./src/components/ui/ArchivedList.vue')['default']
     AutoComplete: typeof import('primevue/autocomplete')['default']
     Button: typeof import('primevue/button')['default']
@@ -14,8 +15,10 @@ declare module 'vue' {
     DateInputField: typeof import('./src/components/common/DateInputField.vue')['default']
     DatePicker: typeof import('primevue/datepicker')['default']
     Dialog: typeof import('primevue/dialog')['default']
+    Dropdown: typeof import('primevue/dropdown')['default']
     DropdownInputField: typeof import('./src/components/common/DropdownInputField.vue')['default']
     FloatLabel: typeof import('primevue/floatlabel')['default']
+    HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     InputText: typeof import('primevue/inputtext')['default']
     Message: typeof import('primevue/message')['default']
     NoTodos: typeof import('./src/components/ui/NoTodos.vue')['default']

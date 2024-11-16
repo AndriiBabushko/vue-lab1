@@ -27,4 +27,8 @@ coverage
 *.sw?
 .yarn/cache
 *.tsbuildinfo
+*.pnp.cjs
+*.pnp.loader.mjs
+*.yarn/*
+*.yarn/cache*
 *.vite
