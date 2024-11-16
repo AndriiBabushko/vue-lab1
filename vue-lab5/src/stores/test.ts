@@ -19,9 +19,10 @@ export interface Question {
   id: number
   question: string
   type: QuestionType
-  correctAnswer: string | string[] | number
+  correctAnswers: (string | number)[]
   options?: string[]
-  validationConfig?: ValidationConfig
+  validationConfig: ValidationConfig
+  selectedAnswers: (string | number)[]
 }
 
 export interface Test {
@@ -42,59 +43,94 @@ export const useTestsStore = defineStore('tests', {
         title: 'Test 1',
         questions: [
           {
-            id: 1,
+            id: 0,
             type: 'single-choice',
             question: 'Виберіть одну відповідь',
             options: ['Варіант 1', 'Варіант 2', 'Варіант 3'],
-            correctAnswer: 'Варіант 2',
-            validationConfig: { errorMessage: 'Оберіть варіант' }
+            correctAnswers: ['Варіант 2'],
+            validationConfig: { errorMessage: 'Оберіть варіант' },
+            selectedAnswers: []
           },
           {
-            id: 2,
-            type: 'multiple-choice',
-            question: 'Виберіть декілька варіантів',
-            options: ['Варіант 1', 'Варіант 2', 'Варіант 3'],
-            correctAnswer: ['Варіант 1', 'Варіант 3'],
-            validationConfig: { errorMessage: 'Оберіть хоча б один варіант' }
-          },
-          {
-            id: 3,
+            id: 1,
             type: 'numeric',
             question: 'Введіть число',
-            correctAnswer: 42,
+            correctAnswers: [100],
             validationConfig: {
               errorMessage: 'Введіть число',
               minValue: 1,
               maxValue: 100
-            }
+            },
+            selectedAnswers: []
           },
           {
-            id: 4,
+            id: 2,
             type: 'yes-no',
             question: 'Виберіть так або ні',
             options: ['Так', 'Ні'],
-            correctAnswer: 'Так',
-            validationConfig: { errorMessage: 'Це поле обов’язкове' }
+            correctAnswers: ['Так'],
+            validationConfig: { errorMessage: 'Це поле обов’язкове' },
+            selectedAnswers: []
           },
           {
-            id: 5,
+            id: 3,
             type: 'date',
             question: 'Введіть дату історичної події',
-            correctAnswer: '1991-08-24',
-            validationConfig: { errorMessage: 'Невірний формат дати' }
+            correctAnswers: ['2022-02-24'],
+            validationConfig: { errorMessage: 'Невірний формат дати' },
+            selectedAnswers: []
           },
           {
-            id: 6,
+            id: 4,
             type: 'text',
             question: 'Введіть текст, що містить ключове слово "приклад"',
-            correctAnswer: 'Це приклад тексту',
+            correctAnswers: ['Це приклад тексту'],
             validationConfig: {
               errorMessage: 'Текст має містити слово "приклад"',
               keywords: ['приклад']
-            }
+            },
+            selectedAnswers: []
           }
+          // {
+          //   id: 5,
+          //   type: 'multiple-choice',
+          //   question: 'Виберіть декілька варіантів',
+          //   options: ['Варіант 1', 'Варіант 2', 'Варіант 3'],
+          //   correctAnswers: ['Варіант 1', 'Варіант 3'],
+          //   validationConfig: { errorMessage: 'Оберіть хоча б один варіант' },
+          //   selectedAnswers: []
+          // }
         ]
       }
     ]
-  })
+  }),
+  actions: {
+    selectAnswer(questionId: number, answer: string | number) {
+      const question = this.tests[0].questions.find((q) => q.id === questionId)
+      if (question) {
+        switch (question.type) {
+          case 'single-choice': {
+            console.log(answer)
+            question.selectedAnswers = [answer]
+            break
+          }
+          case 'multiple-choice': {
+            const index = question.selectedAnswers.indexOf(answer)
+            console.log(JSON.stringify(question, null, 2))
+            console.log(index)
+            if (index === -1) {
+              question.selectedAnswers.push(answer)
+            } else {
+              question.selectedAnswers.splice(index, 1)
+            }
+            break
+          }
+          case 'numeric': {
+            question.selectedAnswers = [answer]
+            break
+          }
+        }
+      }
+    }
+  }
 })

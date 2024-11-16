@@ -4,28 +4,23 @@ import * as yup from 'yup'
 import DefaultLayout from '@/components/layout/DefaultLayout.vue'
 import { ref, computed, watch } from 'vue'
 import { type Question, useTestsStore } from '@/stores/test'
-import router from '@/router'
-import { ROUTE_PATHS } from '@/utils'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
+import { ROUTE_NAMES } from '@/utils'
 
 const currentQuestion = ref(0)
 const testStore = useTestsStore()
+const router = useRouter()
 const { t } = useI18n()
 
-// Структура для зберігання відповідей
-const answers = ref<Record<number, any>>({})
-
-// Стежимо за змінами в answers, щоб зберігати дані
-watch(answers, (newAnswers) => {
-  console.log('Answers updated:', newAnswers)
-})
-
-// Валідація для поточного питання
 const currentValidationSchema = computed(() =>
   getValidationSchema(testStore.tests[0].questions[currentQuestion.value])
 )
 
-// Функція для отримання валідаційної схеми
+watch(testStore.tests[0].questions, () => {
+  console.log(`Questions updated -> ${JSON.stringify(testStore.tests[0].questions, null, 2)}`)
+})
+
 const getValidationSchema = (question: Question) => {
   const { validationConfig = {} } = question
 
@@ -64,20 +59,76 @@ const getValidationSchema = (question: Question) => {
   }
 }
 
-const currentQuestionData = computed(() => testStore.tests[0].questions[currentQuestion.value])
+const currentQuestionData = computed(
+  () =>
+    testStore.tests[0].questions.find((question) => question.id === currentQuestion.value) ||
+    testStore.tests[0].questions[0]
+)
 
-// Функція для збереження відповіді
-const saveAnswer = (questionId: number, value: any) => {
-  console.log(`questionId: ${questionId}, value: ${value}`)
-  answers.value[questionId] = value
-}
+const singleChoiceAnswer = computed({
+  get() {
+    return currentQuestionData.value ? currentQuestionData.value.selectedAnswers[0] : null
+  },
+  set(value) {
+    if (currentQuestionData.value) currentQuestionData.value.selectedAnswers = [value]
+  }
+})
 
-// Перехід до наступного питання
+const multipleChoiceAnswer = computed({
+  get() {
+    return currentQuestionData.value ? currentQuestionData.value.selectedAnswers[0] : null
+  },
+  set(value) {
+    if (currentQuestionData.value) currentQuestionData.value.selectedAnswers = [value]
+  }
+})
+
+const numericAnswer = computed({
+  get() {
+    const value = currentQuestionData.value.selectedAnswers[0]
+    return value ? Number(value) : null
+  },
+  set(value) {
+    currentQuestionData.value.selectedAnswers = [value]
+  }
+})
+
+const yesNoAnswer = computed({
+  get() {
+    return currentQuestionData.value.selectedAnswers[0] || null
+  },
+  set(value) {
+    currentQuestionData.value.selectedAnswers = [value]
+  }
+})
+
+const dateAnswer = computed({
+  get() {
+    const value = currentQuestionData.value.selectedAnswers[0] || null
+    return value ? new Date(value) : null
+  },
+  set(value) {
+    if (value) {
+      const date = new Date(value)
+      const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`
+      currentQuestionData.value.selectedAnswers = [formattedDate]
+    } else {
+      currentQuestionData.value.selectedAnswers = []
+    }
+  }
+})
+
+const textAnswer = computed({
+  get() {
+    const value = currentQuestionData.value.selectedAnswers[0]
+    return value ? String(value) : null
+  },
+  set(value) {
+    currentQuestionData.value.selectedAnswers = [value ?? null]
+  }
+})
+
 const nextQuestion = () => {
-  const currentQuestionId = testStore.tests[0].questions[currentQuestion.value].id
-  const currentAnswer = answers.value[currentQuestionId]
-  saveAnswer(currentQuestionId, currentAnswer)
-
   if (currentQuestion.value < testStore.tests[0].questions.length - 1) {
     currentQuestion.value++
   } else {
@@ -85,41 +136,94 @@ const nextQuestion = () => {
   }
 }
 
-// Перехід до попереднього питання
 const previousQuestion = () => {
-  const currentQuestionId = testStore.tests[0].questions[currentQuestion.value].id
-  const currentAnswer = answers.value[currentQuestionId]
-  saveAnswer(currentQuestionId, currentAnswer)
-
   if (currentQuestion.value > 0) currentQuestion.value--
 }
 
-// Обчислення результатів тесту
 const calculateResults = () => {
-  const correctAnswers = testStore.tests[0].questions.filter(
-    (question) =>
-      JSON.stringify(answers.value[question.id]) === JSON.stringify(question.correctAnswer)
-  ).length
-  const successRate = (correctAnswers / testStore.tests[0].questions.length) * 100
-  return { correctAnswers, successRate }
+  const questions = testStore.tests[0].questions
+  let totalScore = 0
+
+  questions.forEach((question) => {
+    let questionScore = 0
+
+    switch (question.type) {
+      case 'multiple-choice': {
+        if (question.selectedAnswers.length > question.correctAnswers.length) {
+          questionScore = 0
+        } else {
+          const correctSelectedCount = question.selectedAnswers.filter((answer) =>
+            question.correctAnswers.includes(answer)
+          ).length
+
+          questionScore = correctSelectedCount / question.correctAnswers.length
+        }
+        break
+      }
+
+      case 'single-choice':
+      case 'yes-no':
+      case 'date': {
+        const selectedAnswer = question.selectedAnswers[0]
+
+        console.log(selectedAnswer)
+
+        if (
+          question.selectedAnswers.length === 1 &&
+          selectedAnswer === question.correctAnswers[0]
+        ) {
+          questionScore = 1
+        }
+        break
+      }
+
+      case 'numeric': {
+        if (
+          question.selectedAnswers.length === 1 &&
+          Number(question.selectedAnswers[0]) === question.correctAnswers[0]
+        ) {
+          questionScore = 1
+        }
+        break
+      }
+
+      case 'text': {
+        if (
+          question.selectedAnswers.length === 1 &&
+          String(question.selectedAnswers[0]).includes(question.validationConfig.keywords[0])
+        ) {
+          questionScore = 1
+        }
+        break
+      }
+
+      default:
+        break
+    }
+
+    totalScore += questionScore
+  })
+
+  const successRate = (totalScore / questions.length) * 100
+  return { correctAnswers: totalScore, successRate, totalScore }
 }
 
-// Завершення тесту
 const finishTest = () => {
   const isComplete = testStore.tests[0].questions.every(
-    (question) => answers.value[question.id] != null
+    (question) => question.selectedAnswers.length > 0
   )
 
   if (isComplete) {
-    const { correctAnswers, successRate } = calculateResults()
+    const { correctAnswers, successRate, totalScore } = calculateResults()
+
     router.push({
-      name: ROUTE_PATHS.RESULT,
-      params: { correctAnswers, successRate }
+      name: ROUTE_NAMES.RESULT,
+      query: { correctAnswers, successRate, totalScore }
     })
   } else {
     alert(t('validation.completeAllQuestions'))
     currentQuestion.value = testStore.tests[0].questions.findIndex(
-      (question) => answers.value[question.id] == null
+      (question) => question.selectedAnswers.length === 0
     )
   }
 }
@@ -157,11 +261,66 @@ const finishTest = () => {
         </div>
       </div>
 
-      <Form @submit="nextQuestion">
+      <Form :validation-schema="currentValidationSchema" @submit="nextQuestion">
         <!-- Single Choice Question -->
         <div class="pt-[16px]" v-if="currentQuestionData.type === 'single-choice'">
-          <Field name="singleChoice" :rules="currentValidationSchema" v-slot="{ field }">
-            <div class="flex flex-col gap-2">
+          <div class="flex flex-col gap-2">
+            <Field name="singleChoice" v-slot="{ field }">
+              <div
+                v-for="(option, index) in currentQuestionData.options"
+                :key="index"
+                class="flex items-center gap-2"
+              >
+                <input
+                  type="radio"
+                  v-bind="field"
+                  :name="index.toString()"
+                  :id="index.toString()"
+                  :value="option"
+                  v-model="singleChoiceAnswer"
+                  class="mr-2"
+                />
+                <label :for="index.toString()" class="text-white">{{ option }}</label>
+              </div>
+            </Field>
+            <ErrorMessage name="singleChoice" />
+          </div>
+        </div>
+
+        <!-- Multiple Choice Question -->
+        <!--        <div class="pt-[16px]" v-else-if="currentQuestionData.type === 'multiple-choice'">-->
+        <!--          <div class="flex flex-col gap-2">-->
+        <!--            <div-->
+        <!--              v-for="(option, index) in currentQuestionData.options"-->
+        <!--              :key="option"-->
+        <!--              class="flex items-center gap-2"-->
+        <!--            >-->
+        <!--              <input-->
+        <!--                type="checkbox"-->
+        <!--                :name="currentQuestionData.id.toString()"-->
+        <!--                :id="index.toString()"-->
+        <!--                :value="option"-->
+        <!--                v-model="multipleChoiceAnswer"-->
+        <!--                class="mr-2"-->
+        <!--              />-->
+        <!--              <label :for="index.toString()" class="text-white">{{ option }}</label>-->
+        <!--            </div>-->
+        <!--          </div>-->
+        <!--          <ErrorMessage name="multipleChoice" />-->
+        <!--        </div>-->
+
+        <div class="pt-[16px]" v-else-if="currentQuestionData.type === 'numeric'">
+          <div class="flex flex-col gap-2">
+            <Field name="numericAnswer">
+              <InputNumber v-model="numericAnswer" class="w-full" />
+            </Field>
+          </div>
+          <ErrorMessage name="numericAnswer" />
+        </div>
+
+        <div class="pt-[16px]" v-else-if="currentQuestionData.type === 'yes-no'">
+          <div class="flex flex-col gap-2">
+            <Field name="yesNoAnswer">
               <div
                 v-for="option in currentQuestionData.options"
                 :key="option"
@@ -171,84 +330,32 @@ const finishTest = () => {
                   type="radio"
                   :id="option"
                   :value="option"
-                  v-model="answers[currentQuestionData.id]"
+                  v-model="yesNoAnswer"
                   class="mr-2"
-                  v-bind="field"
                 />
                 <label :for="option" class="text-white">{{ option }}</label>
               </div>
-            </div>
-          </Field>
+            </Field>
+          </div>
+          <ErrorMessage name="yesNoAnswer" />
         </div>
 
-        <!-- Multiple Choice Question -->
-        <div class="pt-[16px]" v-else-if="currentQuestionData.type === 'multiple-choice'">
-          <Field
-            v-model="answers[currentQuestionData.id]"
-            name="multipleChoice"
-            type="checkbox"
-            :rules="currentValidationSchema"
-          >
-            <div class="flex flex-col gap-2">
-              <div
-                v-for="option in currentQuestionData.options"
-                :key="option"
-                class="flex items-center gap-2"
-              >
-                <input type="checkbox" :id="option" :value="option" class="mr-2" />
-                <label :for="option" class="text-white">{{ option }}</label>
-              </div>
-            </div>
-          </Field>
-          <ErrorMessage name="multipleChoice" />
-        </div>
-
-        <!-- Numeric Input Question -->
-        <div class="pt-[16px]" v-else-if="currentQuestionData.type === 'numeric'">
-          <Field
-            v-model="answers[currentQuestionData.id]"
-            name="numeric"
-            type="number"
-            :rules="currentValidationSchema"
-          />
-          <ErrorMessage name="numeric" />
-        </div>
-
-        <!-- Yes/No Question -->
-        <div class="pt-[16px]" v-else-if="currentQuestionData.type === 'yes-no'">
-          <Field
-            v-model="answers[currentQuestionData.id]"
-            name="yesNo"
-            as="select"
-            :rules="currentValidationSchema"
-          >
-            <option value="">{{ t('validation.selectOption') }}</option>
-            <option value="yes">{{ t('validation.yes') }}</option>
-            <option value="no">{{ t('validation.no') }}</option>
-          </Field>
-          <ErrorMessage name="yesNo" />
-        </div>
-
-        <!-- Date Input Question -->
         <div class="pt-[16px]" v-else-if="currentQuestionData.type === 'date'">
-          <Field
-            v-model="answers[currentQuestionData.id]"
-            name="date"
-            type="date"
-            :rules="currentValidationSchema"
-          />
-          <ErrorMessage name="date" />
+          <div class="flex flex-col gap-2">
+            <Field name="dateAnswer">
+              <DatePicker v-model="dateAnswer" class="w-full" />
+            </Field>
+          </div>
+          <ErrorMessage name="dateAnswer" />
         </div>
 
-        <!-- Text Input Question -->
         <div class="pt-[16px]" v-else-if="currentQuestionData.type === 'text'">
-          <Field
-            v-model="answers[currentQuestionData.id]"
-            name="text"
-            type="text"
-            :rules="currentValidationSchema"
-          />
-          <ErrorMessage name="text" />
+          <div class="flex flex-col gap-2">
+            <Field name="textAnswer">
+              <InputText v-model="textAnswer" class="w-full" />
+            </Field>
+          </div>
+          <ErrorMessage name="date" />
         </div>
       </Form>
     </div>

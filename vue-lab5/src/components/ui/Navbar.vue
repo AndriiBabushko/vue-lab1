@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import VueSVG from '@/assets/vue.svg?url'
 import { useRouter } from 'vue-router'
 import { ROUTE_PATHS } from '@/utils'
@@ -13,17 +13,21 @@ const router = useRouter()
 const toast = useToast()
 const { t } = useI18n()
 
+const testResultsLabel = computed(() => t('message.menu.testResults'))
+const logoutLabel = computed(() => t('message.menu.logout'))
+const testLabel = computed(() => t('message.menu.test'))
+
 const menu = ref()
 const avatarItems = ref([
   {
-    label: t('message.menu.testResults'),
+    label: testResultsLabel.value,
     icon: 'pi pi-inbox',
     command: () => {
       router.push(ROUTE_PATHS.RESULT)
     }
   },
   {
-    label: t('message.menu.logout'),
+    label: logoutLabel.value,
     icon: 'pi pi-sign-out',
     command: () => {
       userStore.logout().then(() => {
@@ -56,7 +60,7 @@ watch(
     items.value = isLoggedIn
       ? [
           {
-            label: t('message.menu.test'),
+            label: testLabel.value,
             icon: 'pi pi-inbox',
             command: () => router.push(ROUTE_PATHS.TEST)
           }

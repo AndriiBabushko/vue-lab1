@@ -60,5 +60,12 @@
   },
   "question": {
     "number": "Question {current} of {total}"
+  },
+  "results": {
+    "title": "Test Results",
+    "correctAnswers": "Correct Answers",
+    "successRate": "Success Rate",
+    "totalScore": "Total Score",
+    "retry": "Retry Test"
   }
 }

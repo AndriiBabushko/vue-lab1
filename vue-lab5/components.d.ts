@@ -18,6 +18,7 @@ declare module 'vue' {
     Card: typeof import('primevue/card')['default']
     CheckboxGroup: typeof import('./src/components/common/CheckboxGroup.vue')['default']
     CheckboxInput: typeof import('./src/components/common/CheckboxInput.vue')['default']
+    DatePicker: typeof import('primevue/datepicker')['default']
     DefaultLayout: typeof import('./src/components/layout/DefaultLayout.vue')['default']
     DeleteItem: typeof import('./src/components/ui/DeleteItem.vue')['default']
     Dialog: typeof import('primevue/dialog')['default']
